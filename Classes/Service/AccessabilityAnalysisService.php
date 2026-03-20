@@ -291,27 +291,40 @@ class AccessabilityAnalysisService
                 continue;
             }
 
-            if (preg_match_all('/<a\b[^>]*>(.*?)<\/a>/is', $bodytext, $matches, PREG_SET_ORDER)) {
-                foreach ($matches as $match) {
-                    $linkText = trim(strip_tags($match[1]));
-                    $lowerText = mb_strtolower($linkText);
-                    foreach ($nonDescriptivePhrases as $phrase) {
-                        if ($lowerText === $phrase) {
-                            $issues[] = [
-                                'uid'       => $row['uid'],
-                                'pid'       => $row['pid'],
-                                'pageTitle' => $row['page_title'] ?? '',
-                                'header'    => $row['header'],
-                                'issue'     => sprintf('Non-descriptive link text found: "%s".', $linkText),
-                                'severity'  => 'warning',
-                            ];
-                            break 2;
-                        }
-                    }
-                }
+            if (!preg_match_all('/<a\b[^>]*>(.*?)<\/a>/is', $bodytext, $matches, PREG_SET_ORDER)) {
+                continue;
+            }
+
+            $foundPhrase = $this->findNonDescriptiveLinkText($matches, $nonDescriptivePhrases);
+            if ($foundPhrase !== null) {
+                $issues[] = [
+                    'uid'       => $row['uid'],
+                    'pid'       => $row['pid'],
+                    'pageTitle' => $row['page_title'] ?? '',
+                    'header'    => $row['header'],
+                    'issue'     => sprintf('Non-descriptive link text found: "%s".', $foundPhrase),
+                    'severity'  => 'warning',
+                ];
             }
         }
 
         return $issues;
+    }
+
+    /**
+     * Return the first non-descriptive link text found in the given anchor matches, or null.
+     *
+     * @param list<array<int, string>> $matches     Results from preg_match_all with PREG_SET_ORDER
+     * @param list<string>             $phraseList  Lower-case phrases to flag
+     */
+    private function findNonDescriptiveLinkText(array $matches, array $phraseList): ?string
+    {
+        foreach ($matches as $match) {
+            $linkText = trim(strip_tags($match[1]));
+            if (in_array(mb_strtolower($linkText), $phraseList, true)) {
+                return $linkText;
+            }
+        }
+        return null;
     }
 }
