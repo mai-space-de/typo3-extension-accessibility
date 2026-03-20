@@ -7,17 +7,17 @@ defined('TYPO3') or die();
         \TYPO3\CMS\Core\Imaging\IconRegistry::class
     );
     $icons = [
-        'module-accessability'          => 'Extension.svg',
-        'module-accessability-alttext'  => 'module-alttext.svg',
-        'module-accessability-heading'  => 'module-heading.svg',
-        'module-accessability-aria'     => 'module-aria.svg',
-        'module-accessability-linktext' => 'module-linktext.svg',
+        'module-maiaccessibility'          => 'Extension.svg',
+        'module-maiaccessibility-alttext'  => 'module-alttext.svg',
+        'module-maiaccessibility-heading'  => 'module-heading.svg',
+        'module-maiaccessibility-aria'     => 'module-aria.svg',
+        'module-maiaccessibility-linktext' => 'module-linktext.svg',
     ];
     foreach ($icons as $identifier => $file) {
         $iconRegistry->registerIcon(
             $identifier,
             \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
-            ['source' => 'EXT:accessability/Resources/Public/Icons/' . $file]
+            ['source' => 'EXT:mai_accessibility/Resources/Public/Icons/' . $file]
         );
     }
 })();

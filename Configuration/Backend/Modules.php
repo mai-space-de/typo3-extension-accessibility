@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use MaiSpace\Accessability\Controller\AltTextController;
-use MaiSpace\Accessability\Controller\AriaAttributesController;
-use MaiSpace\Accessability\Controller\HeadingStructureController;
+use Maispace\MaiAccessibility\Controller\AltTextController;
+use Maispace\MaiAccessibility\Controller\AriaAttributesController;
+use Maispace\MaiAccessibility\Controller\HeadingStructureController;
 use MaiSpace\Accessability\Controller\LinkTextController;
 
 return [

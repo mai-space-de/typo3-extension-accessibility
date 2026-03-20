@@ -1,5 +1,5 @@
 {
-    "name": "mai-space/accessability",
+    "name": "maispace/mai-accessibility",
     "description": "TYPO3 backend accessibility analysis modules for editorial content checks",
     "license": "GPL-2.0-or-later",
     "type": "typo3-cms-extension",
@@ -14,12 +14,12 @@
     },
     "autoload": {
         "psr-4": {
-            "MaiSpace\\Accessability\\": "Classes/"
+            "Maispace\\MaiAccessibility\\": "Classes/"
         }
     },
     "extra": {
         "typo3/cms": {
-            "extension-key": "accessability"
+            "extension-key": "mai_accessibility"
         }
     }
 }
