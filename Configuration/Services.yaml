@@ -1,0 +1,12 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Maispace\MaiAccessibility\:
+    resource: '../Classes/*'
+
+  Maispace\MaiAccessibility\Controller\:
+    resource: '../Classes/Controller/*'
+    public: true

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-    <file source-language="en" datatype="plaintext" original="EXT:accessability/Resources/Private/Language/locallang_mod.xlf">
+    <file source-language="en" datatype="plaintext" original="EXT:mai_accessibility/Resources/Private/Language/locallang_mod.xlf">
         <body>
-            <trans-unit id="module.accessability">
+            <trans-unit id="module.accessibility">
                 <source>Accessibility</source>
             </trans-unit>
             <trans-unit id="module.alttext">

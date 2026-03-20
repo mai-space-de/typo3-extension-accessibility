@@ -1,25 +1,29 @@
 {
-    "name": "maispace/mai-accessibility",
-    "description": "TYPO3 backend accessibility analysis modules for editorial content checks",
-    "license": "GPL-2.0-or-later",
-    "type": "typo3-cms-extension",
-    "authors": [
-        {
-            "name": "mai.space",
-            "role": "Developer"
-        }
-    ],
-    "require": {
-        "typo3/cms-core": "^12.4 || ^13.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "Maispace\\MaiAccessibility\\": "Classes/"
-        }
-    },
-    "extra": {
-        "typo3/cms": {
-            "extension-key": "mai_accessibility"
-        }
+  "name": "maispace/mai-accessibility",
+  "description": "TYPO3 backend accessibility analysis modules for editorial content checks",
+  "license": "GPL-2.0-or-later",
+  "type": "typo3-cms-extension",
+  "authors": [
+    {
+      "name": "mai.space",
+      "role": "Developer"
     }
+  ],
+  "require": {
+    "php": "^8.2",
+    "typo3/cms-core": "^13.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Maispace\\MaiAccessibility\\": "Classes/"
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "mai_accessibility"
+    },
+    "branch-alias": {
+      "dev-main": "13.0.x-dev"
+    }
+  }
 }

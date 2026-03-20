@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MaiSpace\Accessability\Service;
+namespace Maispace\MaiAccessibility\Service;
 
 use TYPO3\CMS\Core\Database\ConnectionPool;
 

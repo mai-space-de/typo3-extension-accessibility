@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace MaiSpace\Accessability\Controller;
+namespace Maispace\MaiAccessibility\Controller;
 
-use MaiSpace\Accessability\Service\AccessabilityAnalysisService;
+use Maispace\MaiAccessibility\Service\AccessabilityAnalysisService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;

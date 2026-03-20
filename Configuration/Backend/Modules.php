@@ -5,52 +5,52 @@ declare(strict_types=1);
 use Maispace\MaiAccessibility\Controller\AltTextController;
 use Maispace\MaiAccessibility\Controller\AriaAttributesController;
 use Maispace\MaiAccessibility\Controller\HeadingStructureController;
-use MaiSpace\Accessability\Controller\LinkTextController;
+use Maispace\MaiAccessibility\Controller\LinkTextController;
 
 return [
-    'accessability' => [
-        'labels' => 'LLL:EXT:accessability/Resources/Private/Language/locallang_mod.xlf:module.accessability',
-        'iconIdentifier' => 'module-accessability',
+    'accessibility' => [
+        'labels' => 'LLL:EXT:mai_accessibility/Resources/Private/Language/locallang_mod.xlf:module.accessibility',
+        'iconIdentifier' => 'module-maiaccessibility',
         'position' => ['after' => 'web'],
     ],
-    'accessability_alttext' => [
-        'parent' => 'accessability',
+    'accessibility_alttext' => [
+        'parent' => 'accessibility',
         'access' => 'user',
-        'iconIdentifier' => 'module-accessability-alttext',
-        'labels' => 'LLL:EXT:accessability/Resources/Private/Language/locallang_mod.xlf:module.alttext',
+        'iconIdentifier' => 'module-maiaccessibility-alttext',
+        'labels' => 'LLL:EXT:mai_accessibility/Resources/Private/Language/locallang_mod.xlf:module.alttext',
         'routes' => [
             '_default' => [
                 'target' => AltTextController::class . '::handleRequest',
             ],
         ],
     ],
-    'accessability_heading' => [
-        'parent' => 'accessability',
+    'accessibility_heading' => [
+        'parent' => 'accessibility',
         'access' => 'user',
-        'iconIdentifier' => 'module-accessability-heading',
-        'labels' => 'LLL:EXT:accessability/Resources/Private/Language/locallang_mod.xlf:module.heading',
+        'iconIdentifier' => 'module-maiaccessibility-heading',
+        'labels' => 'LLL:EXT:mai_accessibility/Resources/Private/Language/locallang_mod.xlf:module.heading',
         'routes' => [
             '_default' => [
                 'target' => HeadingStructureController::class . '::handleRequest',
             ],
         ],
     ],
-    'accessability_aria' => [
-        'parent' => 'accessability',
+    'accessibility_aria' => [
+        'parent' => 'accessibility',
         'access' => 'user',
-        'iconIdentifier' => 'module-accessability-aria',
-        'labels' => 'LLL:EXT:accessability/Resources/Private/Language/locallang_mod.xlf:module.aria',
+        'iconIdentifier' => 'module-maiaccessibility-aria',
+        'labels' => 'LLL:EXT:mai_accessibility/Resources/Private/Language/locallang_mod.xlf:module.aria',
         'routes' => [
             '_default' => [
                 'target' => AriaAttributesController::class . '::handleRequest',
             ],
         ],
     ],
-    'accessability_linktext' => [
-        'parent' => 'accessability',
+    'accessibility_linktext' => [
+        'parent' => 'accessibility',
         'access' => 'user',
-        'iconIdentifier' => 'module-accessability-linktext',
-        'labels' => 'LLL:EXT:accessability/Resources/Private/Language/locallang_mod.xlf:module.linktext',
+        'iconIdentifier' => 'module-maiaccessibility-linktext',
+        'labels' => 'LLL:EXT:mai_accessibility/Resources/Private/Language/locallang_mod.xlf:module.linktext',
         'routes' => [
             '_default' => [
                 'target' => LinkTextController::class . '::handleRequest',
