@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" original="EXT:accessability/Resources/Private/Language/locallang_mod.xlf">
+        <body>
+            <trans-unit id="module.accessability">
+                <source>Accessibility</source>
+            </trans-unit>
+            <trans-unit id="module.alttext">
+                <source>Alt-Text</source>
+            </trans-unit>
+            <trans-unit id="module.heading">
+                <source>Heading Structure</source>
+            </trans-unit>
+            <trans-unit id="module.aria">
+                <source>ARIA Attributes</source>
+            </trans-unit>
+            <trans-unit id="module.linktext">
+                <source>Link Text</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

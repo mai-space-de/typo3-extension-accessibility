@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <text x="1" y="10" font-family="serif" font-weight="bold" font-size="10" fill="#333">H</text>
+  <line x1="1" y1="13" x2="15" y2="13" stroke="#999" stroke-width="1"/>
+  <line x1="1" y1="15" x2="10" y2="15" stroke="#999" stroke-width="1"/>
+</svg>
