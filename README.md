@@ -5,7 +5,7 @@
 
 Backend module for editorial accessibility analysis. Checks content elements for common accessibility issues before publication. Includes TYPO3 link validation to surface broken links alongside accessibility warnings.
 
-**Requires:** TYPO3 13.4 LTS / 14.0 · PHP 8.2+
+**Requires:** TYPO3 13.4 LTS / 14.1 · PHP 8.2+
 
 ---
 
