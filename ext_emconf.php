@@ -1,15 +1,15 @@
 <?php
 $EM_CONF[$_EXTKEY] = [
-    'title' => 'Accessibility Checks',
-    'description' => 'Backend modules for editorial accessibility analysis: Alt-Text, Heading Structure, ARIA Attributes, and Link Text checks.',
+    'title' => 'Mai Accessibility',
+    'description' => 'Backend module for editorial accessibility analysis. Checks content elements for common accessibility issues before publication. Includes TYPO3 link validation to surface broken links alongside accessibility warnings.',
     'category' => 'module',
-    'author' => 'mai.space',
+    'author' => 'Maispace',
     'author_email' => '',
     'state' => 'beta',
     'version' => '1.0.0',
     'constraints' => [
         'depends' => [
-            'typo3' => '12.4.0-13.99.99',
+            'typo3' => '13.4.0-14.99.99',
         ],
         'conflicts' => [],
         'suggests' => [],
