@@ -1,0 +1,54 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+<be:pageRenderer />
+
+<be:moduleLayout>
+    <f:render section="Content" />
+</be:moduleLayout>
+
+<f:section name="Content">
+    <div class="module-body">
+        <h1><f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:module.title" /></h1>
+        <p><f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:module.description" /></p>
+
+        <f:if condition="{hasPages}">
+            <f:then>
+                <div class="mt-4">
+                    <f:uri.action action="check" controller="Accessibility" extensionName="MaiAccessibility" />
+                    <a href="{f:uri.action(action: 'check', controller: 'Accessibility', extensionName: 'MaiAccessibility')}" class="btn btn-primary">
+                        <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:action.run_check" />
+                    </a>
+                </div>
+
+                <h2 class="mt-4"><f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:pages.list.title" /></h2>
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>UID</th>
+                            <th><f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:pages.column.title" /></th>
+                            <th>Slug</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <f:for each="{pages}" as="page">
+                            <tr>
+                                <td>{page.uid}</td>
+                                <td>{page.title}</td>
+                                <td>{page.slug}</td>
+                            </tr>
+                        </f:for>
+                    </tbody>
+                </table>
+            </f:then>
+            <f:else>
+                <div class="callout callout-info">
+                    <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:pages.empty" />
+                </div>
+            </f:else>
+        </f:if>
+    </div>
+</f:section>
+</html>

@@ -1,0 +1,88 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+<be:pageRenderer />
+
+<be:moduleLayout>
+    <f:render section="Content" />
+</be:moduleLayout>
+
+<f:section name="Content">
+    <div class="module-body">
+        <h1><f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:check.title" /></h1>
+
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card border-danger">
+                    <div class="card-body text-center">
+                        <h2 class="text-danger">{totalErrors}</h2>
+                        <p><f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:check.total_errors" /></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-warning">
+                    <div class="card-body text-center">
+                        <h2 class="text-warning">{totalWarnings}</h2>
+                        <p><f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:check.total_warnings" /></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <a href="{f:uri.action(action: 'exportCsv', controller: 'Accessibility', extensionName: 'MaiAccessibility')}" class="btn btn-outline-secondary">
+                    <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:action.export_csv" />
+                </a>
+            </div>
+        </div>
+
+        <f:if condition="{resultsByPage}">
+            <f:then>
+                <f:for each="{resultsByPage}" as="results" key="pageUid">
+                    <h3>
+                        <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:check.page_heading" />
+                        {pageUid}
+                        <f:for each="{pages}" as="page">
+                            <f:if condition="{page.uid} == {pageUid}">
+                                — {page.title}
+                            </f:if>
+                        </f:for>
+                    </h3>
+                    <table class="table table-sm table-bordered mb-4">
+                        <thead>
+                            <tr>
+                                <th><f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:result.column.check" /></th>
+                                <th><f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:result.column.severity" /></th>
+                                <th><f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:result.column.message" /></th>
+                                <th><f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:result.column.context" /></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <f:for each="{results}" as="result">
+                                <tr class="{f:if(condition: result.severity == 'error', then: 'table-danger', else: f:if(condition: result.severity == 'warning', then: 'table-warning', else: 'table-info'))}">
+                                    <td>{result.checkIdentifier}</td>
+                                    <td>{result.severity}</td>
+                                    <td>{result.message}</td>
+                                    <td><code>{result.context}</code></td>
+                                </tr>
+                            </f:for>
+                        </tbody>
+                    </table>
+                </f:for>
+            </f:then>
+            <f:else>
+                <div class="callout callout-success">
+                    <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:check.no_issues" />
+                </div>
+            </f:else>
+        </f:if>
+
+        <div class="mt-3">
+            <a href="{f:uri.action(action: 'index', controller: 'Accessibility', extensionName: 'MaiAccessibility')}" class="btn btn-secondary">
+                <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:action.back" />
+            </a>
+        </div>
+    </div>
+</f:section>
+</html>

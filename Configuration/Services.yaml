@@ -6,4 +6,29 @@ services:
 
   Maispace\MaiAccessibility\:
     resource: '../Classes/*'
-    exclude: '../Classes/Domain/Model/*'
+
+  Maispace\MaiAccessibility\Controller\Backend\AccessibilityController:
+    public: true
+
+  Maispace\MaiAccessibility\Check\AltTextCheck:
+    tags:
+      - name: 'mai_accessibility.check'
+
+  Maispace\MaiAccessibility\Check\HeadingStructureCheck:
+    tags:
+      - name: 'mai_accessibility.check'
+
+  Maispace\MaiAccessibility\Check\AriaAttributeCheck:
+    tags:
+      - name: 'mai_accessibility.check'
+
+  Maispace\MaiAccessibility\Check\LinkTextCheck:
+    tags:
+      - name: 'mai_accessibility.check'
+
+  Maispace\MaiAccessibility\Service\AccessibilityCheckService:
+    calls:
+      - [addCheck, ['@Maispace\MaiAccessibility\Check\AltTextCheck']]
+      - [addCheck, ['@Maispace\MaiAccessibility\Check\HeadingStructureCheck']]
+      - [addCheck, ['@Maispace\MaiAccessibility\Check\AriaAttributeCheck']]
+      - [addCheck, ['@Maispace\MaiAccessibility\Check\LinkTextCheck']]
