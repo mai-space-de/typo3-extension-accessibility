@@ -26,9 +26,14 @@ services:
     tags:
       - name: 'mai_accessibility.check'
 
+  Maispace\MaiAccessibility\Check\BrokenLinkCheck:
+    tags:
+      - name: 'mai_accessibility.check'
+
   Maispace\MaiAccessibility\Service\AccessibilityCheckService:
     calls:
       - [addCheck, ['@Maispace\MaiAccessibility\Check\AltTextCheck']]
       - [addCheck, ['@Maispace\MaiAccessibility\Check\HeadingStructureCheck']]
       - [addCheck, ['@Maispace\MaiAccessibility\Check\AriaAttributeCheck']]
       - [addCheck, ['@Maispace\MaiAccessibility\Check\LinkTextCheck']]
+      - [addCheck, ['@Maispace\MaiAccessibility\Check\BrokenLinkCheck']]

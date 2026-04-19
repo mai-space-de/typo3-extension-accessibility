@@ -14,11 +14,31 @@
         <h1><f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:module.title" /></h1>
         <p><f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:module.description" /></p>
 
+        <f:if condition="{rootPages}">
+            <form method="get" action="{f:uri.action(action: 'index', controller: 'Accessibility', extensionName: 'MaiAccessibility')}" class="mt-4 d-flex align-items-center gap-3">
+                <label for="rootPageUidSelect" class="form-label mb-0">
+                    <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:scope.label" />
+                </label>
+                <select id="rootPageUidSelect" name="rootPageUid" class="form-select form-select-sm w-auto">
+                    <option value="0">
+                        <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:scope.all_pages" />
+                    </option>
+                    <f:for each="{rootPages}" as="rootPage">
+                        <option value="{rootPage.uid}" <f:if condition="{rootPage.uid} == {rootPageUid}">selected="selected"</f:if>>
+                            {rootPage.title} (UID {rootPage.uid})
+                        </option>
+                    </f:for>
+                </select>
+                <button type="submit" class="btn btn-secondary btn-sm">
+                    <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:scope.apply" />
+                </button>
+            </form>
+        </f:if>
+
         <f:if condition="{hasPages}">
             <f:then>
                 <div class="mt-4">
-                    <f:uri.action action="check" controller="Accessibility" extensionName="MaiAccessibility" />
-                    <a href="{f:uri.action(action: 'check', controller: 'Accessibility', extensionName: 'MaiAccessibility')}" class="btn btn-primary">
+                    <a href="{f:uri.action(action: 'check', controller: 'Accessibility', extensionName: 'MaiAccessibility', arguments: {rootPageUid: rootPageUid})}" class="btn btn-primary">
                         <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:action.run_check" />
                     </a>
                 </div>
@@ -44,7 +64,7 @@
                 </table>
             </f:then>
             <f:else>
-                <div class="callout callout-info">
+                <div class="callout callout-info mt-4">
                     <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:pages.empty" />
                 </div>
             </f:else>

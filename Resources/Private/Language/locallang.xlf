@@ -9,6 +9,16 @@
                 <source>Scan your pages for common accessibility issues including missing alt texts, broken heading hierarchies, invalid ARIA attributes, and non-descriptive link texts.</source>
             </trans-unit>
 
+            <trans-unit id="scope.label">
+                <source>Scope</source>
+            </trans-unit>
+            <trans-unit id="scope.all_pages">
+                <source>All pages</source>
+            </trans-unit>
+            <trans-unit id="scope.apply">
+                <source>Apply</source>
+            </trans-unit>
+
             <trans-unit id="action.run_check">
                 <source>Run Accessibility Check</source>
             </trans-unit>

@@ -6,14 +6,13 @@ namespace Maispace\MaiAccessibility\Controller\Backend;
 
 use Maispace\MaiBase\Controller\Backend\AbstractBackendController;
 use Maispace\MaiBase\Controller\Backend\Traits\BackendCsvExportTrait;
-use Maispace\MaiAccessibility\Check\CheckResult;
 use Maispace\MaiAccessibility\Service\AccessibilityCheckService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Backend\Tree\Repository\PageTreeRepository;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Imaging\IconFactory;
-use TYPO3\CMS\Core\Type\Bitmask\Permission;
 
 #[AsController]
 final class AccessibilityController extends AbstractBackendController
@@ -34,9 +33,15 @@ final class AccessibilityController extends AbstractBackendController
         $moduleTemplate = $this->createModuleTemplate();
         $this->addShortcutButton($moduleTemplate);
 
+        $rootPageUid = (int)($this->request->getQueryParams()['rootPageUid'] ?? 0);
+        $rootPages = $this->getRootPages();
+        $pages = $this->getCheckablePages($rootPageUid);
+
         $this->assignMultiple($moduleTemplate, [
-            'pages' => $this->getCheckablePages(),
-            'hasPages' => count($this->getCheckablePages()) > 0,
+            'pages' => $pages,
+            'hasPages' => $pages !== [],
+            'rootPages' => $rootPages,
+            'rootPageUid' => $rootPageUid,
         ]);
 
         return $this->renderModuleResponse($moduleTemplate, 'Index');
@@ -47,7 +52,8 @@ final class AccessibilityController extends AbstractBackendController
         $moduleTemplate = $this->createModuleTemplate();
         $this->addShortcutButton($moduleTemplate);
 
-        $pages = $this->getCheckablePages();
+        $rootPageUid = (int)($this->request->getQueryParams()['rootPageUid'] ?? 0);
+        $pages = $this->getCheckablePages($rootPageUid);
         $pageUids = array_column($pages, 'uid');
 
         $resultsByPage = $this->accessibilityCheckService->checkPages($pageUids);
@@ -69,6 +75,7 @@ final class AccessibilityController extends AbstractBackendController
             'resultsByPage' => $resultsByPage,
             'totalErrors' => $totalErrors,
             'totalWarnings' => $totalWarnings,
+            'rootPageUid' => $rootPageUid,
         ]);
 
         return $this->renderModuleResponse($moduleTemplate, 'Check');
@@ -76,7 +83,8 @@ final class AccessibilityController extends AbstractBackendController
 
     public function exportCsvAction(): ResponseInterface
     {
-        $pages = $this->getCheckablePages();
+        $rootPageUid = (int)($this->request->getQueryParams()['rootPageUid'] ?? 0);
+        $pages = $this->getCheckablePages($rootPageUid);
         $pageUids = array_column($pages, 'uid');
         $resultsByPage = $this->accessibilityCheckService->checkPages($pageUids);
 
@@ -96,18 +104,66 @@ final class AccessibilityController extends AbstractBackendController
         return $this->csvDownloadResponse($rows, 'accessibility-report.csv');
     }
 
-    private function getCheckablePages(): array
+    private function getCheckablePages(int $rootPageUid = 0): array
+    {
+        if ($rootPageUid > 0) {
+            $pageTreeRepository = new PageTreeRepository();
+            $subtreePages = $pageTreeRepository->getFlattenedPages([$rootPageUid], 20);
+            $rootPage = $this->fetchSinglePage($rootPageUid);
+            if ($rootPage !== null) {
+                array_unshift($subtreePages, $rootPage);
+            }
+            return array_values(array_filter($subtreePages, static fn(array $page): bool => (int)($page['doktype'] ?? 0) === 1));
+        }
+
+        return $this->fetchAllCheckablePages();
+    }
+
+    private function fetchAllCheckablePages(): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('pages');
         return $queryBuilder
-            ->select('uid', 'title', 'slug')
+            ->select('uid', 'title', 'slug', 'doktype')
             ->from('pages')
             ->where(
-                $queryBuilder->expr()->eq('deleted', 0),
-                $queryBuilder->expr()->eq('hidden', 0),
-                $queryBuilder->expr()->eq('doktype', 1),
+                $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)),
+                $queryBuilder->expr()->eq('hidden', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)),
+                $queryBuilder->expr()->eq('doktype', $queryBuilder->createNamedParameter(1, \PDO::PARAM_INT)),
             )
             ->orderBy('uid')
+            ->executeQuery()
+            ->fetchAllAssociative();
+    }
+
+    private function fetchSinglePage(int $uid): ?array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('pages');
+        $row = $queryBuilder
+            ->select('uid', 'title', 'slug', 'doktype')
+            ->from('pages')
+            ->where(
+                $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)),
+                $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)),
+            )
+            ->executeQuery()
+            ->fetchAssociative();
+
+        return $row ?: null;
+    }
+
+    private function getRootPages(): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('pages');
+        return $queryBuilder
+            ->select('uid', 'title')
+            ->from('pages')
+            ->where(
+                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)),
+                $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)),
+                $queryBuilder->expr()->eq('hidden', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)),
+                $queryBuilder->expr()->eq('doktype', $queryBuilder->createNamedParameter(1, \PDO::PARAM_INT)),
+            )
+            ->orderBy('sorting')
             ->executeQuery()
             ->fetchAllAssociative();
     }
