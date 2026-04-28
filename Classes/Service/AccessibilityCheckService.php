@@ -99,7 +99,7 @@ final class AccessibilityCheckService
             ->select('header', 'subheader', 'bodytext')
             ->from('tt_content')
             ->where(
-                $qb->expr()->eq('pid', $qb->createNamedParameter($pageUid, \PDO::PARAM_INT)),
+                $qb->expr()->eq('pid', $qb->createNamedParameter($pageUid, \Doctrine\DBAL\ParameterType::INTEGER)),
                 $qb->expr()->eq('deleted', 0),
                 $qb->expr()->eq('hidden', 0),
             )
@@ -117,7 +117,7 @@ final class AccessibilityCheckService
             ->join('r', 'sys_file', 'f', $qb->expr()->eq('r.uid_local', 'f.uid'))
             ->join('r', 'tt_content', 'c', $qb->expr()->eq('r.uid_foreign', 'c.uid'))
             ->where(
-                $qb->expr()->eq('c.pid', $qb->createNamedParameter($pageUid, \PDO::PARAM_INT)),
+                $qb->expr()->eq('c.pid', $qb->createNamedParameter($pageUid, \Doctrine\DBAL\ParameterType::INTEGER)),
                 $qb->expr()->eq('r.deleted', 0),
                 $qb->expr()->eq('r.hidden', 0),
                 $qb->expr()->eq('c.deleted', 0),

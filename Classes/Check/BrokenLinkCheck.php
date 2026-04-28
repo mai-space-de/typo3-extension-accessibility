@@ -53,7 +53,7 @@ final class BrokenLinkCheck implements CheckInterface
             ->select('url', 'field', 'record_uid', 'link_type')
             ->from('tx_linkvalidator_link')
             ->where(
-                $qb->expr()->eq('record_pid', $qb->createNamedParameter($pageUid, \PDO::PARAM_INT)),
+                $qb->expr()->eq('record_pid', $qb->createNamedParameter($pageUid, \Doctrine\DBAL\ParameterType::INTEGER)),
             )
             ->executeQuery()
             ->fetchAllAssociative();
@@ -66,7 +66,7 @@ final class BrokenLinkCheck implements CheckInterface
             ->count('uid')
             ->from('tx_linkvalidator_link')
             ->where(
-                $qb->expr()->eq('record_pid', $qb->createNamedParameter($pageUid, \PDO::PARAM_INT)),
+                $qb->expr()->eq('record_pid', $qb->createNamedParameter($pageUid, \Doctrine\DBAL\ParameterType::INTEGER)),
             )
             ->executeQuery()
             ->fetchOne();

@@ -31,7 +31,7 @@ final class AccessibilityController extends AbstractBackendController
     public function indexAction(): ResponseInterface
     {
         $moduleTemplate = $this->createModuleTemplate();
-        $this->addShortcutButton($moduleTemplate);
+        $this->addShortcutButton($moduleTemplate, 'mai_accessibility', 'Accessibility');
 
         $rootPageUid = (int)($this->request->getQueryParams()['rootPageUid'] ?? 0);
         $rootPages = $this->getRootPages();
@@ -50,7 +50,7 @@ final class AccessibilityController extends AbstractBackendController
     public function checkAction(): ResponseInterface
     {
         $moduleTemplate = $this->createModuleTemplate();
-        $this->addShortcutButton($moduleTemplate);
+        $this->addShortcutButton($moduleTemplate, 'mai_accessibility', 'Accessibility');
 
         $rootPageUid = (int)($this->request->getQueryParams()['rootPageUid'] ?? 0);
         $pages = $this->getCheckablePages($rootPageUid);
@@ -126,9 +126,9 @@ final class AccessibilityController extends AbstractBackendController
             ->select('uid', 'title', 'slug', 'doktype')
             ->from('pages')
             ->where(
-                $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)),
-                $queryBuilder->expr()->eq('hidden', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)),
-                $queryBuilder->expr()->eq('doktype', $queryBuilder->createNamedParameter(1, \PDO::PARAM_INT)),
+                $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, \Doctrine\DBAL\ParameterType::INTEGER)),
+                $queryBuilder->expr()->eq('hidden', $queryBuilder->createNamedParameter(0, \Doctrine\DBAL\ParameterType::INTEGER)),
+                $queryBuilder->expr()->eq('doktype', $queryBuilder->createNamedParameter(1, \Doctrine\DBAL\ParameterType::INTEGER)),
             )
             ->orderBy('uid')
             ->executeQuery()
@@ -142,8 +142,8 @@ final class AccessibilityController extends AbstractBackendController
             ->select('uid', 'title', 'slug', 'doktype')
             ->from('pages')
             ->where(
-                $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)),
-                $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)),
+                $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \Doctrine\DBAL\ParameterType::INTEGER)),
+                $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, \Doctrine\DBAL\ParameterType::INTEGER)),
             )
             ->executeQuery()
             ->fetchAssociative();
@@ -158,10 +158,10 @@ final class AccessibilityController extends AbstractBackendController
             ->select('uid', 'title')
             ->from('pages')
             ->where(
-                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)),
-                $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)),
-                $queryBuilder->expr()->eq('hidden', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)),
-                $queryBuilder->expr()->eq('doktype', $queryBuilder->createNamedParameter(1, \PDO::PARAM_INT)),
+                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter(0, \Doctrine\DBAL\ParameterType::INTEGER)),
+                $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, \Doctrine\DBAL\ParameterType::INTEGER)),
+                $queryBuilder->expr()->eq('hidden', $queryBuilder->createNamedParameter(0, \Doctrine\DBAL\ParameterType::INTEGER)),
+                $queryBuilder->expr()->eq('doktype', $queryBuilder->createNamedParameter(1, \Doctrine\DBAL\ParameterType::INTEGER)),
             )
             ->orderBy('sorting')
             ->executeQuery()
