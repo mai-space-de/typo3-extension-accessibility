@@ -37,8 +37,8 @@ final class BrokenLinkCheck implements CheckInterface
         foreach ($brokenLinks as $link) {
             $results[] = CheckResult::error(
                 $this->getIdentifier(),
-                sprintf('Broken link detected: %s', (string)($link['url'] ?? '(unknown)')),
-                sprintf('Field: %s — Element UID: %s', (string)($link['field'] ?? ''), (string)($link['record_uid'] ?? '')),
+                sprintf('Broken link detected: %s', (string) ($link['url'] ?? '(unknown)')),
+                sprintf('Field: %s — Element UID: %s', (string) ($link['field'] ?? ''), (string) ($link['record_uid'] ?? '')),
                 $pageUid,
             );
         }
@@ -71,7 +71,7 @@ final class BrokenLinkCheck implements CheckInterface
             ->executeQuery()
             ->fetchOne();
 
-        if ((int)$count > 0) {
+        if ((int) $count > 0) {
             return true;
         }
 
@@ -82,6 +82,6 @@ final class BrokenLinkCheck implements CheckInterface
             ->executeQuery()
             ->fetchOne();
 
-        return (int)$any > 0;
+        return (int) $any > 0;
     }
 }

@@ -29,7 +29,7 @@ final class HeadingStructureCheck implements CheckInterface
 
         $levels = [];
         foreach ($headings as $heading) {
-            $levels[] = (int)substr($heading->nodeName, 1);
+            $levels[] = (int) substr($heading->nodeName, 1);
         }
 
         $previousLevel = $levels[0];

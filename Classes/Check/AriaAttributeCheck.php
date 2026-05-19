@@ -40,6 +40,10 @@ final class AriaAttributeCheck implements CheckInterface
         $nodesWithRole = $xpath->query('//*[@role]');
         if ($nodesWithRole !== false) {
             foreach ($nodesWithRole as $node) {
+                if (!$node instanceof \DOMElement) {
+                    continue;
+                }
+
                 $role = $node->getAttribute('role');
                 if (!in_array(strtolower(trim($role)), self::VALID_ROLES, true)) {
                     $results[] = CheckResult::error(
@@ -55,6 +59,10 @@ final class AriaAttributeCheck implements CheckInterface
         $nodesWithAriaHidden = $xpath->query('//*[@aria-hidden="true"][@tabindex]');
         if ($nodesWithAriaHidden !== false) {
             foreach ($nodesWithAriaHidden as $node) {
+                if (!$node instanceof \DOMElement) {
+                    continue;
+                }
+
                 $results[] = CheckResult::warning(
                     $this->getIdentifier(),
                     'Element is aria-hidden but has a tabindex — it may still receive focus.',
@@ -67,6 +75,10 @@ final class AriaAttributeCheck implements CheckInterface
         $ariaLabelledBy = $xpath->query('//*[@aria-labelledby]');
         if ($ariaLabelledBy !== false) {
             foreach ($ariaLabelledBy as $node) {
+                if (!$node instanceof \DOMElement) {
+                    continue;
+                }
+
                 $refId = $node->getAttribute('aria-labelledby');
                 $referenced = $doc->getElementById($refId);
                 if ($referenced === null) {

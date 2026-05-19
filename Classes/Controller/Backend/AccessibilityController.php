@@ -33,7 +33,7 @@ final class AccessibilityController extends AbstractBackendController
         $moduleTemplate = $this->createModuleTemplate();
         $this->addShortcutButton($moduleTemplate, 'mai_accessibility', 'Accessibility');
 
-        $rootPageUid = (int)($this->request->getQueryParams()['rootPageUid'] ?? 0);
+        $rootPageUid = (int) ($this->request->getQueryParams()['rootPageUid'] ?? 0);
         $rootPages = $this->getRootPages();
         $pages = $this->getCheckablePages($rootPageUid);
 
@@ -52,7 +52,7 @@ final class AccessibilityController extends AbstractBackendController
         $moduleTemplate = $this->createModuleTemplate();
         $this->addShortcutButton($moduleTemplate, 'mai_accessibility', 'Accessibility');
 
-        $rootPageUid = (int)($this->request->getQueryParams()['rootPageUid'] ?? 0);
+        $rootPageUid = (int) ($this->request->getQueryParams()['rootPageUid'] ?? 0);
         $pages = $this->getCheckablePages($rootPageUid);
         $pageUids = array_column($pages, 'uid');
 
@@ -83,7 +83,7 @@ final class AccessibilityController extends AbstractBackendController
 
     public function exportCsvAction(): ResponseInterface
     {
-        $rootPageUid = (int)($this->request->getQueryParams()['rootPageUid'] ?? 0);
+        $rootPageUid = (int) ($this->request->getQueryParams()['rootPageUid'] ?? 0);
         $pages = $this->getCheckablePages($rootPageUid);
         $pageUids = array_column($pages, 'uid');
         $resultsByPage = $this->accessibilityCheckService->checkPages($pageUids);
@@ -113,7 +113,7 @@ final class AccessibilityController extends AbstractBackendController
             if ($rootPage !== null) {
                 array_unshift($subtreePages, $rootPage);
             }
-            return array_values(array_filter($subtreePages, static fn(array $page): bool => (int)($page['doktype'] ?? 0) === 1));
+            return array_values(array_filter($subtreePages, static fn(array $page): bool => (int) ($page['doktype'] ?? 0) === 1));
         }
 
         return $this->fetchAllCheckablePages();

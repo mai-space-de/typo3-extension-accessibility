@@ -34,7 +34,7 @@ final class AccessibilityCheckServiceTest extends TestCase
         $contentQb->method('where')->willReturnSelf();
         $contentQb->method('orderBy')->willReturnSelf();
         $contentQb->method('expr')->willReturn($exprBuilder);
-        $contentQb->method('createNamedParameter')->willReturnArgument(0);
+        $contentQb->method('createNamedParameter')->willReturnCallback(static fn(mixed $v): string => (string) $v);
         $contentQb->method('executeQuery')->willReturn($contentResult);
 
         $fileQb = $this->createMock(QueryBuilder::class);
@@ -43,7 +43,7 @@ final class AccessibilityCheckServiceTest extends TestCase
         $fileQb->method('join')->willReturnSelf();
         $fileQb->method('where')->willReturnSelf();
         $fileQb->method('expr')->willReturn($exprBuilder);
-        $fileQb->method('createNamedParameter')->willReturnArgument(0);
+        $fileQb->method('createNamedParameter')->willReturnCallback(static fn(mixed $v): string => (string) $v);
         $fileQb->method('executeQuery')->willReturn($fileResult);
 
         $connectionPool = $this->createMock(ConnectionPool::class);
@@ -80,7 +80,7 @@ final class AccessibilityCheckServiceTest extends TestCase
             ->method('check')
             ->with(
                 self::stringContains('My Title'),
-                1
+                1,
             )
             ->willReturn([]);
 
@@ -130,7 +130,7 @@ final class AccessibilityCheckServiceTest extends TestCase
         $qb->method('where')->willReturnSelf();
         $qb->method('orderBy')->willReturnSelf();
         $qb->method('expr')->willReturn($exprBuilder);
-        $qb->method('createNamedParameter')->willReturnArgument(0);
+        $qb->method('createNamedParameter')->willReturnCallback(static fn(mixed $v): string => (string) $v);
         $qb->method('executeQuery')->willReturn($emptyResult);
 
         $connectionPool->method('getQueryBuilderForTable')->willReturn($qb);

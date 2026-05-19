@@ -10,7 +10,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 
 final class AccessibilityCheckService
 {
-    /** @var CheckInterface[] */
+    /** @var array<string, CheckInterface> */
     private array $checks = [];
 
     public function __construct(
@@ -54,7 +54,7 @@ final class AccessibilityCheckService
     }
 
     /**
-     * @return array<string, string>
+     * @return list<string>
      */
     public function getRegisteredCheckIdentifiers(): array
     {
@@ -68,13 +68,13 @@ final class AccessibilityCheckService
         $contentRows = $this->fetchContentElements($pageUid);
         foreach ($contentRows as $row) {
             if (!empty($row['header'])) {
-                $parts[] = sprintf('<h2>%s</h2>', htmlspecialchars((string)$row['header']));
+                $parts[] = sprintf('<h2>%s</h2>', htmlspecialchars((string) $row['header']));
             }
             if (!empty($row['subheader'])) {
-                $parts[] = sprintf('<h3>%s</h3>', htmlspecialchars((string)$row['subheader']));
+                $parts[] = sprintf('<h3>%s</h3>', htmlspecialchars((string) $row['subheader']));
             }
             if (!empty($row['bodytext'])) {
-                $parts[] = (string)$row['bodytext'];
+                $parts[] = (string) $row['bodytext'];
             }
         }
 
@@ -83,9 +83,9 @@ final class AccessibilityCheckService
             $alt = $ref['alternative'] ?? null;
             $src = $ref['identifier'] ?? 'image';
             if ($alt === null) {
-                $parts[] = sprintf('<img src="%s">', htmlspecialchars((string)$src));
+                $parts[] = sprintf('<img src="%s">', htmlspecialchars((string) $src));
             } else {
-                $parts[] = sprintf('<img src="%s" alt="%s">', htmlspecialchars((string)$src), htmlspecialchars((string)$alt));
+                $parts[] = sprintf('<img src="%s" alt="%s">', htmlspecialchars((string) $src), htmlspecialchars((string) $alt));
             }
         }
 
