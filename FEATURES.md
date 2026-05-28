@@ -44,7 +44,7 @@ The selected `rootPageUid` is threaded through to all three actions so that
 
 ## 3. Accessibility Checks
 
-Five checks are registered by default via the `mai_accessibility.check` DI tag
+Eight checks are registered by default via the `mai_accessibility.check` DI tag
 (see §5). Each implements `CheckInterface` and returns zero or more `CheckResult`
 value objects.
 
@@ -55,6 +55,9 @@ value objects.
 | `aria-attributes` | `AriaAttributeCheck` | Elements with `role` but missing required ARIA attributes |
 | `link-text` | `LinkTextCheck` | Anchors with non-descriptive text ("click here", "more", …) |
 | `broken-links` | `BrokenLinkCheck` | Pages flagged by `cms-linkvalidator`; returns a warning when `cms-linkvalidator` is not installed |
+| `landmarks` | `LandmarksCheck` | Duplicate or unlabelled ARIA landmarks (`main`, `banner`, `navigation`, etc.); reports all detected landmarks for awareness |
+| `color_contrast` | `ContrastCheck` | Inline CSS colour contrast against WCAG 2.1 AA thresholds (4.5:1 normal text, 3:1 large text); warns when text or background colour is set without the other |
+| `focus-trap` | `FocusTrapCheck` | Modal dialogs without focusable content, `aria-hidden` containers with focusable children, and tab panels lacking keyboard-accessible elements |
 
 ---
 

@@ -30,6 +30,18 @@ services:
     tags:
       - name: 'mai_accessibility.check'
 
+  Maispace\MaiAccessibility\Check\ContrastCheck:
+    tags:
+      - name: 'mai_accessibility.check'
+
+  Maispace\MaiAccessibility\Check\FocusTrapCheck:
+    tags:
+      - name: 'mai_accessibility.check'
+
+  Maispace\MaiAccessibility\Check\LandmarksCheck:
+    tags:
+      - name: 'mai_accessibility.check'
+
   Maispace\MaiAccessibility\Service\AccessibilityCheckService:
     calls:
       - [addCheck, ['@Maispace\MaiAccessibility\Check\AltTextCheck']]
@@ -37,3 +49,6 @@ services:
       - [addCheck, ['@Maispace\MaiAccessibility\Check\AriaAttributeCheck']]
       - [addCheck, ['@Maispace\MaiAccessibility\Check\LinkTextCheck']]
       - [addCheck, ['@Maispace\MaiAccessibility\Check\BrokenLinkCheck']]
+      - [addCheck, ['@Maispace\MaiAccessibility\Check\ContrastCheck']]
+      - [addCheck, ['@Maispace\MaiAccessibility\Check\FocusTrapCheck']]
+      - [addCheck, ['@Maispace\MaiAccessibility\Check\LandmarksCheck']]
