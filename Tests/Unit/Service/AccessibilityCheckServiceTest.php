@@ -8,6 +8,7 @@ use Doctrine\DBAL\Result;
 use Maispace\MaiAccessibility\Check\CheckInterface;
 use Maispace\MaiAccessibility\Check\CheckResult;
 use Maispace\MaiAccessibility\Service\AccessibilityCheckService;
+use Maispace\MaiAccessibility\Service\FrontendHtmlFetcherInterface;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use TYPO3\CMS\Core\Database\Connection;
@@ -51,7 +52,10 @@ final class AccessibilityCheckServiceTest extends TestCase
             ->method('getQueryBuilderForTable')
             ->willReturnOnConsecutiveCalls($contentQb, $fileQb);
 
-        return new AccessibilityCheckService($connectionPool);
+        $fetcher = $this->createMock(FrontendHtmlFetcherInterface::class);
+        $fetcher->method('fetchHtmlForPage')->willReturn('');
+
+        return new AccessibilityCheckService($connectionPool, $fetcher);
     }
 
     #[Test]
@@ -135,7 +139,10 @@ final class AccessibilityCheckServiceTest extends TestCase
 
         $connectionPool->method('getQueryBuilderForTable')->willReturn($qb);
 
-        $service = new AccessibilityCheckService($connectionPool);
+        $fetcher = $this->createMock(FrontendHtmlFetcherInterface::class);
+        $fetcher->method('fetchHtmlForPage')->willReturn('');
+
+        $service = new AccessibilityCheckService($connectionPool, $fetcher);
 
         $check = $this->createMock(CheckInterface::class);
         $check->method('getIdentifier')->willReturn('test');
@@ -152,7 +159,8 @@ final class AccessibilityCheckServiceTest extends TestCase
     public function getRegisteredCheckIdentifiersReturnsAllAdded(): void
     {
         $connectionPool = $this->createMock(ConnectionPool::class);
-        $service = new AccessibilityCheckService($connectionPool);
+        $fetcher = $this->createMock(FrontendHtmlFetcherInterface::class);
+        $service = new AccessibilityCheckService($connectionPool, $fetcher);
 
         $checkA = $this->createMock(CheckInterface::class);
         $checkA->method('getIdentifier')->willReturn('alpha');
@@ -164,5 +172,45 @@ final class AccessibilityCheckServiceTest extends TestCase
         $service->addCheck($checkB);
 
         self::assertSame(['alpha', 'beta'], $service->getRegisteredCheckIdentifiers());
+    }
+
+    #[Test]
+    public function checkPageUsesFrontendHtmlWhenAvailable(): void
+    {
+        $connectionPool = $this->createMock(ConnectionPool::class);
+        $connectionPool->expects(self::never())->method('getQueryBuilderForTable');
+
+        $fetcher = $this->createMock(FrontendHtmlFetcherInterface::class);
+        $fetcher->method('fetchHtmlForPage')->with(7)->willReturn('<html><body>FE content</body></html>');
+
+        $service = new AccessibilityCheckService($connectionPool, $fetcher);
+
+        $check = $this->createMock(CheckInterface::class);
+        $check->method('getIdentifier')->willReturn('test');
+        $check->expects(self::once())
+            ->method('check')
+            ->with('<html><body>FE content</body></html>', 7)
+            ->willReturn([]);
+
+        $service->addCheck($check);
+        $service->checkPage(7);
+    }
+
+    #[Test]
+    public function checkPageFallsBackToDbHtmlWhenFrontendFetchReturnsEmpty(): void
+    {
+        $service = $this->buildServiceWithContentRows([
+            ['header' => 'DB Title', 'subheader' => '', 'bodytext' => ''],
+        ]);
+
+        $check = $this->createMock(CheckInterface::class);
+        $check->method('getIdentifier')->willReturn('test');
+        $check->expects(self::once())
+            ->method('check')
+            ->with(self::stringContains('DB Title'), 1)
+            ->willReturn([]);
+
+        $service->addCheck($check);
+        $service->checkPage(1);
     }
 }

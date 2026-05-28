@@ -15,6 +15,7 @@ final class AccessibilityCheckService
 
     public function __construct(
         private readonly ConnectionPool $connectionPool,
+        private readonly FrontendHtmlFetcherInterface $frontendHtmlFetcher,
     ) {}
 
     public function addCheck(CheckInterface $check): void
@@ -63,6 +64,11 @@ final class AccessibilityCheckService
 
     private function buildContentHtml(int $pageUid): string
     {
+        $frontendHtml = $this->frontendHtmlFetcher->fetchHtmlForPage($pageUid);
+        if ($frontendHtml !== '') {
+            return $frontendHtml;
+        }
+
         $parts = [];
 
         $contentRows = $this->fetchContentElements($pageUid);
