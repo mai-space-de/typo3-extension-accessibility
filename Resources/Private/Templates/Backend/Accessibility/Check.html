@@ -31,7 +31,7 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <a href="{f:uri.action(action: 'exportCsv', controller: 'Accessibility', extensionName: 'MaiAccessibility')}" class="btn btn-outline-secondary">
+                <a href="{f:uri.action(action: 'exportCsv', controller: 'Accessibility', extensionName: 'MaiAccessibility', arguments: {selectedPageUid: selectedPageUid})}" class="btn btn-outline-secondary">
                     <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:action.export_csv" />
                 </a>
             </div>
@@ -79,7 +79,7 @@
         </f:if>
 
         <div class="mt-3">
-            <a href="{f:uri.action(action: 'index', controller: 'Accessibility', extensionName: 'MaiAccessibility')}" class="btn btn-secondary">
+            <a href="{f:uri.action(action: 'index', controller: 'Accessibility', extensionName: 'MaiAccessibility', arguments: {selectedPageUid: selectedPageUid})}" class="btn btn-secondary">
                 <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:action.back" />
             </a>
         </div>

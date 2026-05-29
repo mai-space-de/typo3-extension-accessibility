@@ -3,7 +3,7 @@
     xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
     data-namespace-typo3-fluid="true"
 >
-<be:pageRenderer />
+<be:pageRenderer includeJavaScriptModules="{0: '@typo3/backend/page-tree/page-tree-element.js'}" />
 
 <be:moduleLayout>
     <f:render section="Content" />
@@ -14,61 +14,84 @@
         <h1><f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:module.title" /></h1>
         <p><f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:module.description" /></p>
 
-        <f:if condition="{rootPages}">
-            <form method="get" action="{f:uri.action(action: 'index', controller: 'Accessibility', extensionName: 'MaiAccessibility')}" class="mt-4 d-flex align-items-center gap-3">
-                <label for="rootPageUidSelect" class="form-label mb-0">
-                    <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:scope.label" />
-                </label>
-                <select id="rootPageUidSelect" name="rootPageUid" class="form-select form-select-sm w-auto">
-                    <option value="0">
-                        <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:scope.all_pages" />
-                    </option>
-                    <f:for each="{rootPages}" as="rootPage">
-                        <option value="{rootPage.uid}" <f:if condition="{rootPage.uid} == {rootPageUid}">selected="selected"</f:if>>
-                            {rootPage.title} (UID {rootPage.uid})
-                        </option>
-                    </f:for>
-                </select>
-                <button type="submit" class="btn btn-secondary btn-sm">
-                    <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:scope.apply" />
-                </button>
-            </form>
-        </f:if>
-
-        <f:if condition="{hasPages}">
-            <f:then>
-                <div class="mt-4">
-                    <a href="{f:uri.action(action: 'check', controller: 'Accessibility', extensionName: 'MaiAccessibility', arguments: {rootPageUid: rootPageUid})}" class="btn btn-primary">
-                        <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:action.run_check" />
-                    </a>
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <strong><f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:scope.label" /></strong>
+                    </div>
+                    <div class="card-body p-0" style="height: 60vh; overflow-y: auto;">
+                        <typo3-backend-page-tree id="accessibility-page-tree" class="svg-tree-wrapper"></typo3-backend-page-tree>
+                    </div>
                 </div>
+            </div>
+            <div class="col-md-8">
+                <f:if condition="{selectedPageUid} > 0">
+                    <f:then>
+                        <div class="alert alert-info">
+                            <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:scope.selected_page" />
+                            <strong>{selectedPageTitle}</strong> (UID {selectedPageUid})
+                        </div>
 
-                <h2 class="mt-4"><f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:pages.list.title" /></h2>
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>UID</th>
-                            <th><f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:pages.column.title" /></th>
-                            <th>Slug</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <f:for each="{pages}" as="page">
-                            <tr>
-                                <td>{page.uid}</td>
-                                <td>{page.title}</td>
-                                <td>{page.slug}</td>
-                            </tr>
-                        </f:for>
-                    </tbody>
-                </table>
-            </f:then>
-            <f:else>
-                <div class="callout callout-info mt-4">
-                    <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:pages.empty" />
-                </div>
-            </f:else>
-        </f:if>
+                        <f:if condition="{hasPages}">
+                            <f:then>
+                                <div class="mb-3">
+                                    <a href="{f:uri.action(action: 'check', controller: 'Accessibility', extensionName: 'MaiAccessibility', arguments: {selectedPageUid: selectedPageUid})}" class="btn btn-primary">
+                                        <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:action.run_check" />
+                                    </a>
+                                </div>
+
+                                <h2><f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:pages.list.title" /></h2>
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>UID</th>
+                                            <th><f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:pages.column.title" /></th>
+                                            <th>Slug</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <f:for each="{pages}" as="page">
+                                            <tr>
+                                                <td>{page.uid}</td>
+                                                <td>{page.title}</td>
+                                                <td>{page.slug}</td>
+                                            </tr>
+                                        </f:for>
+                                    </tbody>
+                                </table>
+                            </f:then>
+                            <f:else>
+                                <div class="callout callout-info mt-3">
+                                    <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:pages.empty" />
+                                </div>
+                            </f:else>
+                        </f:if>
+                    </f:then>
+                    <f:else>
+                        <div class="callout callout-info">
+                            <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:scope.select_page_hint" />
+                        </div>
+                    </f:else>
+                </f:if>
+            </div>
+        </div>
     </div>
 </f:section>
+
 </html>
+
+<script type="module"><![CDATA[
+    (function() {
+        const pageTree = document.getElementById('accessibility-page-tree');
+        if (!pageTree) return;
+
+        document.addEventListener('typo3:svg-tree:node-selected', function(event) {
+            const pageId = event.detail && event.detail.identifier;
+            if (!pageId) return;
+            const url = new URL(window.location.href);
+            url.searchParams.set('selectedPageUid', pageId);
+            window.location.href = url.toString();
+        });
+    })();
+]]></script>

@@ -10,7 +10,6 @@ use Maispace\MaiAccessibility\Service\AccessibilityCheckService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
-use TYPO3\CMS\Backend\Tree\Repository\PageTreeRepository;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 
@@ -33,15 +32,21 @@ final class AccessibilityController extends AbstractBackendController
         $moduleTemplate = $this->createModuleTemplate();
         $this->addShortcutButton($moduleTemplate, 'mai_accessibility', 'Accessibility');
 
-        $rootPageUid = (int) ($this->request->getQueryParams()['rootPageUid'] ?? 0);
-        $rootPages = $this->getRootPages();
-        $pages = $this->getCheckablePages($rootPageUid);
+        $selectedPageUid = (int) ($this->request->getQueryParams()['selectedPageUid'] ?? 0);
+        $selectedPageTitle = '';
+        $pages = [];
+
+        if ($selectedPageUid > 0) {
+            $page = $this->fetchSinglePage($selectedPageUid);
+            $selectedPageTitle = $page['title'] ?? '';
+            $pages = $this->getCheckablePages($selectedPageUid);
+        }
 
         $this->assignMultiple($moduleTemplate, [
             'pages' => $pages,
             'hasPages' => $pages !== [],
-            'rootPages' => $rootPages,
-            'rootPageUid' => $rootPageUid,
+            'selectedPageUid' => $selectedPageUid,
+            'selectedPageTitle' => $selectedPageTitle,
         ]);
 
         return $this->renderModuleResponse($moduleTemplate, 'Index');
@@ -52,8 +57,8 @@ final class AccessibilityController extends AbstractBackendController
         $moduleTemplate = $this->createModuleTemplate();
         $this->addShortcutButton($moduleTemplate, 'mai_accessibility', 'Accessibility');
 
-        $rootPageUid = (int) ($this->request->getQueryParams()['rootPageUid'] ?? 0);
-        $pages = $this->getCheckablePages($rootPageUid);
+        $selectedPageUid = (int) ($this->request->getQueryParams()['selectedPageUid'] ?? 0);
+        $pages = $this->getCheckablePages($selectedPageUid);
         $pageUids = array_column($pages, 'uid');
 
         $resultsByPage = $this->accessibilityCheckService->checkPages($pageUids);
@@ -75,7 +80,7 @@ final class AccessibilityController extends AbstractBackendController
             'resultsByPage' => $resultsByPage,
             'totalErrors' => $totalErrors,
             'totalWarnings' => $totalWarnings,
-            'rootPageUid' => $rootPageUid,
+            'selectedPageUid' => $selectedPageUid,
         ]);
 
         return $this->renderModuleResponse($moduleTemplate, 'Check');
@@ -83,8 +88,8 @@ final class AccessibilityController extends AbstractBackendController
 
     public function exportCsvAction(): ResponseInterface
     {
-        $rootPageUid = (int) ($this->request->getQueryParams()['rootPageUid'] ?? 0);
-        $pages = $this->getCheckablePages($rootPageUid);
+        $selectedPageUid = (int) ($this->request->getQueryParams()['selectedPageUid'] ?? 0);
+        $pages = $this->getCheckablePages($selectedPageUid);
         $pageUids = array_column($pages, 'uid');
         $resultsByPage = $this->accessibilityCheckService->checkPages($pageUids);
 
@@ -104,19 +109,79 @@ final class AccessibilityController extends AbstractBackendController
         return $this->csvDownloadResponse($rows, 'accessibility-report.csv');
     }
 
-    private function getCheckablePages(int $rootPageUid = 0): array
+    /**
+     * Resolves all page UIDs in the subtree of the given parent using iterative
+     * breadth-first traversal. This ensures truly recursive resolution without
+     * depth limits, unlike the PageTreeRepository::getFlattenedPages approach.
+     *
+     * @return int[] Sorted list of page UIDs including the parent.
+     */
+    private function resolveSubtreePageIds(int $parentUid): array
     {
-        if ($rootPageUid > 0) {
-            $pageTreeRepository = new PageTreeRepository();
-            $subtreePages = $pageTreeRepository->getFlattenedPages([$rootPageUid], 20);
-            $rootPage = $this->fetchSinglePage($rootPageUid);
-            if ($rootPage !== null) {
-                array_unshift($subtreePages, $rootPage);
+        $collected = [];
+        $stack = [$parentUid];
+
+        while ($stack !== []) {
+            $currentUid = array_shift($stack);
+            $collected[] = $currentUid;
+
+            $children = $this->fetchChildPageIds($currentUid);
+            foreach ($children as $childUid) {
+                if (!in_array($childUid, $collected, true) && !in_array($childUid, $stack, true)) {
+                    $stack[] = $childUid;
+                }
             }
-            return array_values(array_filter($subtreePages, static fn(array $page): bool => (int) ($page['doktype'] ?? 0) === 1));
+        }
+
+        sort($collected);
+        return $collected;
+    }
+
+    private function fetchChildPageIds(int $parentUid): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('pages');
+        $rows = $queryBuilder
+            ->select('uid')
+            ->from('pages')
+            ->where(
+                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($parentUid, \Doctrine\DBAL\ParameterType::INTEGER)),
+                $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, \Doctrine\DBAL\ParameterType::INTEGER)),
+            )
+            ->executeQuery()
+            ->fetchAllAssociative();
+
+        return array_map(intval(...), array_column($rows, 'uid'));
+    }
+
+    private function getCheckablePages(int $selectedPageUid = 0): array
+    {
+        if ($selectedPageUid > 0) {
+            $pageIds = $this->resolveSubtreePageIds($selectedPageUid);
+
+            return $this->fetchPagesByUids($pageIds);
         }
 
         return $this->fetchAllCheckablePages();
+    }
+
+    private function fetchPagesByUids(array $uids): array
+    {
+        if ($uids === []) {
+            return [];
+        }
+
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('pages');
+        return $queryBuilder
+            ->select('uid', 'title', 'slug', 'doktype')
+            ->from('pages')
+            ->where(
+                $queryBuilder->expr()->in('uid', $uids),
+                $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, \Doctrine\DBAL\ParameterType::INTEGER)),
+                $queryBuilder->expr()->eq('doktype', $queryBuilder->createNamedParameter(1, \Doctrine\DBAL\ParameterType::INTEGER)),
+            )
+            ->orderBy('uid')
+            ->executeQuery()
+            ->fetchAllAssociative();
     }
 
     private function fetchAllCheckablePages(): array
@@ -149,22 +214,5 @@ final class AccessibilityController extends AbstractBackendController
             ->fetchAssociative();
 
         return $row ?: null;
-    }
-
-    private function getRootPages(): array
-    {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('pages');
-        return $queryBuilder
-            ->select('uid', 'title')
-            ->from('pages')
-            ->where(
-                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter(0, \Doctrine\DBAL\ParameterType::INTEGER)),
-                $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, \Doctrine\DBAL\ParameterType::INTEGER)),
-                $queryBuilder->expr()->eq('hidden', $queryBuilder->createNamedParameter(0, \Doctrine\DBAL\ParameterType::INTEGER)),
-                $queryBuilder->expr()->eq('doktype', $queryBuilder->createNamedParameter(1, \Doctrine\DBAL\ParameterType::INTEGER)),
-            )
-            ->orderBy('sorting')
-            ->executeQuery()
-            ->fetchAllAssociative();
     }
 }

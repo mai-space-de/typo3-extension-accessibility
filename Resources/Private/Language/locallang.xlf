@@ -19,7 +19,13 @@
             </trans-unit>
 
             <trans-unit id="scope.label">
-                <source>Scope</source>
+                <source>Page Tree</source>
+            </trans-unit>
+            <trans-unit id="scope.selected_page">
+                <source>Selected page:</source>
+            </trans-unit>
+            <trans-unit id="scope.select_page_hint">
+                <source>Select a page in the page tree to see its subtree. You can then run an accessibility check against all pages in that subtree.</source>
             </trans-unit>
             <trans-unit id="scope.all_pages">
                 <source>All pages</source>
@@ -39,13 +45,13 @@
             </trans-unit>
 
             <trans-unit id="pages.list.title">
-                <source>Pages to be checked</source>
+                <source>Pages in Subtree</source>
             </trans-unit>
             <trans-unit id="pages.column.title">
                 <source>Title</source>
             </trans-unit>
             <trans-unit id="pages.empty">
-                <source>No published normal pages found.</source>
+                <source>No published standard pages found in this subtree.</source>
             </trans-unit>
 
             <trans-unit id="check.title">
