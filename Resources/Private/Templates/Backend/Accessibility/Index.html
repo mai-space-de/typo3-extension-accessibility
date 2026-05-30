@@ -83,8 +83,8 @@
         const pageTree = document.getElementById('accessibility-page-tree');
         if (!pageTree) return;
 
-        document.addEventListener('typo3:svg-tree:node-selected', function(event) {
-            const pageId = event.detail && event.detail.identifier;
+        document.addEventListener('typo3-pagetree:node-selected', function(event) {
+            const pageId = event.detail && (event.detail.node?.stateIdentifier || event.detail.identifier);
             if (!pageId) return;
             const url = new URL(window.location.href);
             url.searchParams.set('selectedPageUid', pageId);

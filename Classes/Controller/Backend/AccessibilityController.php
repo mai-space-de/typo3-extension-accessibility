@@ -181,7 +181,6 @@ final class AccessibilityController extends AbstractBackendController
             ->where(
                 $queryBuilder->expr()->in('uid', $uids),
                 $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, \Doctrine\DBAL\ParameterType::INTEGER)),
-                $queryBuilder->expr()->eq('doktype', $queryBuilder->createNamedParameter(1, \Doctrine\DBAL\ParameterType::INTEGER)),
             )
             ->orderBy('uid')
             ->executeQuery()
@@ -196,7 +195,6 @@ final class AccessibilityController extends AbstractBackendController
             ->from('pages')
             ->where(
                 $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, \Doctrine\DBAL\ParameterType::INTEGER)),
-                $queryBuilder->expr()->eq('hidden', $queryBuilder->createNamedParameter(0, \Doctrine\DBAL\ParameterType::INTEGER)),
                 $queryBuilder->expr()->eq('doktype', $queryBuilder->createNamedParameter(1, \Doctrine\DBAL\ParameterType::INTEGER)),
             )
             ->orderBy('uid')
