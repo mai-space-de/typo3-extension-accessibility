@@ -22,7 +22,7 @@
                                 <f:then>
                                     <div class="list-group">
                                         <f:for each="{rootPages}" as="page">
-                                            <a href="{f:uri.action(action: 'index', controller: 'Accessibility', extensionName: 'MaiAccessibility', arguments: {selectedPageUid: page.uid})}"
+                                            <a href="?selectedPageUid={page.uid}"
                                                class="list-group-item list-group-item-action {f:if(condition: '{selectedPageUid} == {page.uid}', then: 'active')}">
                                                 <strong>{page.title}</strong><br/>
                                                 <small style="color: #666;">UID {page.uid}</small>
