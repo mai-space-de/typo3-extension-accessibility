@@ -1,6 +1,5 @@
 <html
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
-    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     data-namespace-typo3-fluid="true"
 >
 
@@ -18,7 +17,26 @@
                         <strong><f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:scope.label" /></strong>
                     </div>
                     <div class="card-body p-0" style="height: 60vh; overflow-y: auto;">
-                        <typo3-backend-page-tree id="accessibility-page-tree" class="svg-tree-wrapper"></typo3-backend-page-tree>
+                        <div style="padding: 1rem;">
+                            <f:if condition="{rootPages}">
+                                <f:then>
+                                    <div class="list-group">
+                                        <f:for each="{rootPages}" as="page">
+                                            <a href="{f:uri.action(action: 'index', controller: 'Accessibility', extensionName: 'MaiAccessibility', arguments: {selectedPageUid: page.uid})}"
+                                               class="list-group-item list-group-item-action {f:if(condition: '{selectedPageUid} == {page.uid}', then: 'active')}">
+                                                <strong>{page.title}</strong><br/>
+                                                <small style="color: #666;">UID {page.uid}</small>
+                                            </a>
+                                        </f:for>
+                                    </div>
+                                </f:then>
+                                <f:else>
+                                    <p style="padding: 1rem; color: #999;">
+                                        <f:translate key="LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf:pages.empty" />
+                                    </p>
+                                </f:else>
+                            </f:if>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -77,18 +95,3 @@
 </f:section>
 
 </html>
-
-<script type="module"><![CDATA[
-    (function() {
-        const pageTree = document.getElementById('accessibility-page-tree');
-        if (!pageTree) return;
-
-        document.addEventListener('typo3-pagetree:node-selected', function(event) {
-            const pageId = event.detail && (event.detail.node?.stateIdentifier || event.detail.identifier);
-            if (!pageId) return;
-            const url = new URL(window.location.href);
-            url.searchParams.set('selectedPageUid', pageId);
-            window.location.href = url.toString();
-        });
-    })();
-]]></script>

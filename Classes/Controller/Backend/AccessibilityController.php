@@ -37,6 +37,7 @@ final class AccessibilityController extends AbstractBackendController
         $selectedPageUid = (int) ($this->request->getQueryParams()['selectedPageUid'] ?? 0);
         $selectedPageTitle = '';
         $pages = [];
+        $rootPages = $this->fetchRootPages();
 
         if ($selectedPageUid > 0) {
             $page = $this->fetchSinglePage($selectedPageUid);
@@ -49,9 +50,8 @@ final class AccessibilityController extends AbstractBackendController
             'hasPages' => $pages !== [],
             'selectedPageUid' => $selectedPageUid,
             'selectedPageTitle' => $selectedPageTitle,
+            'rootPages' => $rootPages,
         ]);
-
-        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/page-tree/page-tree-element.js');
 
         return $this->renderModuleResponse($moduleTemplate, 'Index');
     }
@@ -216,5 +216,21 @@ final class AccessibilityController extends AbstractBackendController
             ->fetchAssociative();
 
         return $row ?: null;
+    }
+
+    private function fetchRootPages(): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('pages');
+        return $queryBuilder
+            ->select('uid', 'title', 'slug', 'doktype')
+            ->from('pages')
+            ->where(
+                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter(0, \Doctrine\DBAL\ParameterType::INTEGER)),
+                $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, \Doctrine\DBAL\ParameterType::INTEGER)),
+                $queryBuilder->expr()->eq('doktype', $queryBuilder->createNamedParameter(1, \Doctrine\DBAL\ParameterType::INTEGER)),
+            )
+            ->orderBy('sorting')
+            ->executeQuery()
+            ->fetchAllAssociative();
     }
 }
