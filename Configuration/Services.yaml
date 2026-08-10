@@ -7,6 +7,27 @@ services:
   Maispace\MaiAccessibility\:
     resource: '../Classes/*'
 
+  Maispace\MaiAccessibility\Service\ImagePayloadPreparerInterface:
+    alias: Maispace\MaiAccessibility\Service\ImagePayloadPreparer
+
+  Maispace\MaiAccessibility\Service\FileMetaDataAltTextWriterInterface:
+    alias: Maispace\MaiAccessibility\Service\FileMetaDataAltTextWriter
+
+  Maispace\MaiAccessibility\Service\EmptyReferenceAltNullerInterface:
+    alias: Maispace\MaiAccessibility\Service\EmptyReferenceAltNuller
+
+  Maispace\MaiAccessibility\Service\MissingAltTextCandidateFinderInterface:
+    alias: Maispace\MaiAccessibility\Service\MissingAltTextCandidateFinder
+
+  Maispace\MaiAccessibility\Service\AltTextGenerationServiceInterface:
+    alias: Maispace\MaiAccessibility\Service\AltTextGenerationService
+
+  Maispace\MaiAccessibility\Provider\OllamaVisionClientInterface:
+    alias: Maispace\MaiAccessibility\Provider\OllamaVisionClient
+
+  Maispace\MaiAccessibility\Provider\OllamaChatClientInterface:
+    alias: Maispace\MaiAccessibility\Provider\OllamaChatClient
+
   Maispace\MaiAccessibility\Controller\Backend\AccessibilityController:
     public: true
 

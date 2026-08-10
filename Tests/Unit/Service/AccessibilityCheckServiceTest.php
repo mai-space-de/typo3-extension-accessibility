@@ -42,6 +42,7 @@ final class AccessibilityCheckServiceTest extends TestCase
         $fileQb->method('select')->willReturnSelf();
         $fileQb->method('from')->willReturnSelf();
         $fileQb->method('join')->willReturnSelf();
+        $fileQb->method('leftJoin')->willReturnSelf();
         $fileQb->method('where')->willReturnSelf();
         $fileQb->method('expr')->willReturn($exprBuilder);
         $fileQb->method('createNamedParameter')->willReturnCallback(static fn(mixed $v): string => (string) $v);
@@ -131,6 +132,7 @@ final class AccessibilityCheckServiceTest extends TestCase
         $qb->method('select')->willReturnSelf();
         $qb->method('from')->willReturnSelf();
         $qb->method('join')->willReturnSelf();
+        $qb->method('leftJoin')->willReturnSelf();
         $qb->method('where')->willReturnSelf();
         $qb->method('orderBy')->willReturnSelf();
         $qb->method('expr')->willReturn($exprBuilder);
@@ -208,6 +210,45 @@ final class AccessibilityCheckServiceTest extends TestCase
         $check->expects(self::once())
             ->method('check')
             ->with(self::stringContains('DB Title'), 1)
+            ->willReturn([]);
+
+        $service->addCheck($check);
+        $service->checkPage(1);
+    }
+
+    #[Test]
+    public function checkPageUsesMetadataAltWhenReferenceAltIsNull(): void
+    {
+        $service = $this->buildServiceWithContentRows([], [
+            ['alternative' => null, 'meta_alternative' => 'From metadata', 'identifier' => '/img.jpg'],
+        ]);
+
+        $check = $this->createMock(CheckInterface::class);
+        $check->method('getIdentifier')->willReturn('test');
+        $check->expects(self::once())
+            ->method('check')
+            ->with(self::stringContains('alt="From metadata"'), 1)
+            ->willReturn([]);
+
+        $service->addCheck($check);
+        $service->checkPage(1);
+    }
+
+    #[Test]
+    public function checkPageKeepsEmptyReferenceAltOverMetadata(): void
+    {
+        $service = $this->buildServiceWithContentRows([], [
+            ['alternative' => '', 'meta_alternative' => 'From metadata', 'identifier' => '/img.jpg'],
+        ]);
+
+        $check = $this->createMock(CheckInterface::class);
+        $check->method('getIdentifier')->willReturn('test');
+        $check->expects(self::once())
+            ->method('check')
+            ->with(self::logicalAnd(
+                self::stringContains('alt=""'),
+                self::logicalNot(self::stringContains('From metadata')),
+            ), 1)
             ->willReturn([]);
 
         $service->addCheck($check);

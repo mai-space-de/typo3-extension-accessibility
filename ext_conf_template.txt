@@ -1,0 +1,14 @@
+# cat=ollama/enable/10; type=string; label=Ollama base URL
+ollama.baseUrl = http://localhost:11434
+
+# cat=ollama/enable/20; type=string; label=Ollama model (vision + chat, e.g. gemma4)
+ollama.chatModel = gemma4
+
+# cat=ollama/enable/30; type=int+; label=HTTP timeout in seconds for Ollama requests (vision needs more time)
+ollama.timeout = 120
+
+# cat=ollama/enable/40; type=int+; label=Max image edge length in pixels before Base64 encoding (saves tokens)
+ollama.maxImageEdge = 1024
+
+# cat=ollama/enable/50; type=string; label=Sampling temperature (0–1) for generation
+ollama.temperature = 0.2

@@ -86,12 +86,12 @@ final class AccessibilityCheckService
 
         $imageAltTexts = $this->fetchImageAltTexts($pageUid);
         foreach ($imageAltTexts as $ref) {
-            $alt = $ref['alternative'] ?? null;
-            $src = $ref['identifier'] ?? 'image';
+            $alt = $ref['alternative'];
+            $src = $ref['identifier'];
             if ($alt === null) {
-                $parts[] = sprintf('<img src="%s">', htmlspecialchars((string) $src));
+                $parts[] = sprintf('<img src="%s">', htmlspecialchars($src));
             } else {
-                $parts[] = sprintf('<img src="%s" alt="%s">', htmlspecialchars((string) $src), htmlspecialchars((string) $alt));
+                $parts[] = sprintf('<img src="%s" alt="%s">', htmlspecialchars($src), htmlspecialchars($alt));
             }
         }
 
@@ -114,14 +114,26 @@ final class AccessibilityCheckService
             ->fetchAllAssociative();
     }
 
+    /**
+     * Effective alt matches FAL FileReference merge rules:
+     * non-null reference.alternative wins (including ''); otherwise metadata.
+     *
+     * @return list<array{alternative: string|null, identifier: string}>
+     */
     private function fetchImageAltTexts(int $pageUid): array
     {
         $qb = $this->connectionPool->getQueryBuilderForTable('sys_file_reference');
-        return $qb
-            ->select('r.alternative', 'f.identifier')
+        $rows = $qb
+            ->select('r.alternative', 'm.alternative AS meta_alternative', 'f.identifier')
             ->from('sys_file_reference', 'r')
-            ->join('r', 'sys_file', 'f', $qb->expr()->eq('r.uid_local', 'f.uid'))
-            ->join('r', 'tt_content', 'c', $qb->expr()->eq('r.uid_foreign', 'c.uid'))
+            ->join('r', 'sys_file', 'f', 'r.uid_local = f.uid')
+            ->leftJoin(
+                'r',
+                'sys_file_metadata',
+                'm',
+                'm.file = f.uid AND m.sys_language_uid IN (0, -1)',
+            )
+            ->join('r', 'tt_content', 'c', 'r.uid_foreign = c.uid')
             ->where(
                 $qb->expr()->eq('c.pid', $qb->createNamedParameter($pageUid, \Doctrine\DBAL\ParameterType::INTEGER)),
                 $qb->expr()->eq('r.deleted', 0),
@@ -129,9 +141,25 @@ final class AccessibilityCheckService
                 $qb->expr()->eq('c.deleted', 0),
                 $qb->expr()->eq('c.hidden', 0),
                 $qb->expr()->eq('r.tablenames', $qb->createNamedParameter('tt_content')),
-                $qb->expr()->eq('r.fieldname', $qb->createNamedParameter('image')),
+                $qb->expr()->eq('f.type', $qb->createNamedParameter(\TYPO3\CMS\Core\Resource\FileType::IMAGE->value, \Doctrine\DBAL\ParameterType::INTEGER)),
             )
             ->executeQuery()
             ->fetchAllAssociative();
+
+        $result = [];
+        foreach ($rows as $row) {
+            $referenceAlt = $row['alternative'] ?? null;
+            $metaAlt = $row['meta_alternative'] ?? null;
+            // FAL: only null on the reference falls back to metadata.
+            $effective = $referenceAlt !== null ? (string) $referenceAlt : ($metaAlt !== null ? (string) $metaAlt : null);
+            $result[] = [
+                'alternative' => $effective,
+                'identifier' => isset($row['identifier']) && (string) $row['identifier'] !== ''
+                    ? (string) $row['identifier']
+                    : 'image',
+            ];
+        }
+
+        return $result;
     }
 }

@@ -12,7 +12,6 @@ use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Imaging\IconFactory;
-use TYPO3\CMS\Core\Page\PageRenderer;
 
 #[AsController]
 final class AccessibilityController extends AbstractBackendController
@@ -24,7 +23,6 @@ final class AccessibilityController extends AbstractBackendController
         IconFactory $iconFactory,
         private readonly AccessibilityCheckService $accessibilityCheckService,
         private readonly ConnectionPool $connectionPool,
-        private readonly PageRenderer $pageRenderer,
     ) {
         parent::__construct($moduleTemplateFactory, $iconFactory);
     }

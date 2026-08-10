@@ -25,8 +25,8 @@
         "helmich/typo3-typoscript-lint": "^3.1",
         "phpstan/phpstan": "^2.0",
         "phpunit/phpunit": "^11.0",
-        "saschaegerer/phpstan-typo3": "^2.0",
-        "typo3/testing-framework": "^8.0"
+        "saschaegerer/phpstan-typo3": "^3.0",
+        "typo3/testing-framework": "^9.0"
     },
     "extra": {
         "typo3/cms": {
@@ -62,10 +62,16 @@
     },
     "require": {
         "php": "^8.2",
-        "maispace/mai-base": "^14.0",
-        "typo3/cms-core": "^13.4 || ^14.0",
-        "typo3/cms-linkvalidator": "^13.4 || ^14.0"
+        "maispace/mai-base": "@dev",
+        "typo3/cms-core": "^14.1",
+        "typo3/cms-linkvalidator": "^14.1"
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../typo3-extension-base"
+        }
+    ],
     "config": {
         "allow-plugins": {
             "typo3/cms-composer-installers": true,

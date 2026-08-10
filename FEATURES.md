@@ -80,13 +80,18 @@ string from the database and passes it to every registered check.
 │       bodytext as raw HTML                          │
 │                                                     │
 │  2. fetchImageAltTexts($pageUid)                    │
-│     SELECT r.alternative, f.identifier              │
+│     SELECT r.alternative, m.alternative,            │
+│            f.identifier                             │
 │     FROM sys_file_reference r                       │
 │       JOIN sys_file f ON r.uid_local = f.uid        │
+│       LEFT JOIN sys_file_metadata m                 │
+│         ON m.file = f.uid AND lang IN (0,-1)        │
 │       JOIN tt_content c ON r.uid_foreign = c.uid    │
 │     WHERE c.pid=? … tablenames='tt_content'         │
-│           fieldname='image'                         │
+│           f.type = IMAGE                            │
 │                                                     │
+│     Effective alt = reference if NOT NULL,          │
+│     else metadata (FAL fallback rules).             │
 │     → <img src="…"> (no alt) or                    │
 │       <img src="…" alt="…"> (with alt)             │
 │                                                     │
@@ -170,9 +175,31 @@ the on-screen results.
 
 - **Admin-only** — the module is `access: admin`; no frontend exposure.
 - **No custom tables** — all data is read from `tt_content`, `sys_file_reference`,
-  `sys_file`, `pages`, and `tx_linkvalidator_broken_links`. Nothing is written.
+  `sys_file`, `sys_file_metadata`, `pages`, and `tx_linkvalidator_broken_links`.
+- **Writes (CLI only)** — `mai-accessibility:generate-alt-texts` writes multilingual
+  `alternative` values onto `sys_file_metadata` (default language + overlays) and
+  nulls empty `sys_file_reference.alternative` values so FAL falls back to metadata.
+  The backend module still does not write data.
 - **Database-driven** — checks run against stored content, not against a rendered
   HTTP response. A page's rendered output may differ from what the checks see.
 - **Shared icon** — uses `mai-backend-module` (provided by `mai_base`); never
   declare its own backend module icon SVG.
 - **Layer** — Developer Tools layer; no dependency on Feature-layer extensions.
+
+---
+
+## 9. Alt-text generation (CLI)
+
+```bash
+ddev typo3 mai-accessibility:generate-alt-texts [--dry-run] [--force] [--limit=N] [--file=UID] [--storage=N]
+```
+
+Uses local **Ollama** (default model `gemma4`, configured via Extension Manager /
+`ext_conf_template.txt`):
+
+1. One vision call per image → German alt text
+2. Text-only Ollama calls → en / uk / ar translations
+3. Persist on `sys_file_metadata` (+ language overlays); never fill reference alts
+4. Set empty reference `alternative` to `NULL` so references inherit metadata
+
+Token savings: image tokens paid once per file; all usages of that file inherit via FAL.
