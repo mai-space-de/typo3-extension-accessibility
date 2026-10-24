@@ -10,7 +10,7 @@ return [
         'access' => 'admin',
         'workspaces' => 'online',
         'path' => '/module/mai-accessibility',
-        'iconIdentifier' => 'mai-backend-module',
+        'iconIdentifier' => 'mai-accessibility-module',
         'labels' => 'LLL:EXT:mai_accessibility/Resources/Private/Language/locallang.xlf',
         'extensionName' => 'MaiAccessibility',
         'controllerActions' => [
