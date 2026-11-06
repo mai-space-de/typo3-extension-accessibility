@@ -73,3 +73,21 @@ services:
       - [addCheck, ['@Maispace\MaiAccessibility\Check\ContrastCheck']]
       - [addCheck, ['@Maispace\MaiAccessibility\Check\FocusTrapCheck']]
       - [addCheck, ['@Maispace\MaiAccessibility\Check\LandmarksCheck']]
+
+  dashboard.widget.maiAccessibilityManual:
+    class: 'ProudNerds\PnBackendManual\Widgets\ManualWidget'
+    arguments:
+      $options:
+        file: 'EXT:mai_accessibility/Resources/Private/Manual/Manual.md'
+        numbered: true
+        contentsDepth: 2
+        printButton: true
+    tags:
+      - name: dashboard.widget
+        identifier: 'maiAccessibilityManual'
+        groupNames: 'documentation'
+        title: 'Handbuch: Barrierefreiheit'
+        description: 'Kurze Anleitung für Barrierefreiheitsprüfungen im Backend.'
+        iconIdentifier: 'content-book'
+        height: 'medium'
+        width: 'medium'
